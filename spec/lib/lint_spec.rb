@@ -83,12 +83,13 @@ describe Jshint::Lint do
     context "excluded subdirectory" do
       let(:excluded_path) { 'app/assets/javascripts/i18n' }
       let(:excluded_file) { 'app/assets/javascripts/i18n/test.js' }
-      let(:files) { [file, excluded_file] }
+      let(:deeper_excluded_file) { 'app/assets/javascripts/i18n/js/test.js' }
+      let(:files) { [file, excluded_file, deeper_excluded_file] }
 
       before do
         allow(subject).to receive(:javascript_files).and_call_original
         allow(subject).to receive(:file_paths).and_return([excluded_path])
-        allow(Dir).to receive(:glob).and_yield(file).and_yield(excluded_file)
+        allow(Dir).to receive(:glob).and_yield(file).and_yield(excluded_file).and_yield(deeper_excluded_file)
         allow(configuration).to receive(:exclude_paths).and_return([excluded_path])
         allow(subject).to receive(:get_file_content_as_json).
           and_return(subject.get_json(<<-eos
@@ -107,6 +108,7 @@ describe Jshint::Lint do
       it "should not load those files" do
         expect(subject).to receive(:get_file_content_as_json).with(file)
         expect(subject).to_not receive(:get_file_content_as_json).with(excluded_file)
+        expect(subject).to_not receive(:get_file_content_as_json).with(deeper_excluded_file)
         subject.lint
       end
     end
