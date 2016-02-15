@@ -90,7 +90,7 @@ describe Jshint::Lint do
         allow(subject).to receive(:javascript_files).and_call_original
         allow(subject).to receive(:file_paths).and_return([excluded_path])
         allow(Dir).to receive(:glob).and_yield(file).and_yield(excluded_file).and_yield(deeper_excluded_file)
-        allow(configuration).to receive(:exclude_paths).and_return([excluded_path])
+        allow(configuration).to receive(:excluded_search_paths).and_return([excluded_path])
         allow(subject).to receive(:get_file_content_as_json).
           and_return(subject.get_json(<<-eos
               var foo = "bar",

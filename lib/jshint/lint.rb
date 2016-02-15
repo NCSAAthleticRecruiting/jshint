@@ -104,7 +104,7 @@ module Jshint
     end
 
     def exclude_file?(filename)
-      config.exclude_paths.any? {|path| File.fnmatch?(File.join(path, '*'), filename)}
+      config.excluded_search_paths.any? {|path| File.fnmatch?(File.join(path, '*'), filename)}
     end
   end
 end
