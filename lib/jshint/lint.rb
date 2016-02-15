@@ -1,7 +1,6 @@
 require "execjs"
 require "multi_json"
 require "jshint/configuration"
-require 'pry'
 
 module Jshint
   # Performs the linting of the files declared in our Configuration object
