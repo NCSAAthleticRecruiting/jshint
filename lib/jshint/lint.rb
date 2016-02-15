@@ -96,11 +96,15 @@ module Jshint
       js_asset_files = []
       file_paths.each do |path|
         Dir.glob(path) do |file|
-          js_asset_files << file
+          js_asset_files << file unless exclude_file?(file)
         end
       end
 
       js_asset_files
+    end
+
+    def exclude_file?(filename)
+      config.exclude_paths.any? {|path| File.fnmatch?(File.join(path, '*'), filename)}
     end
   end
 end
