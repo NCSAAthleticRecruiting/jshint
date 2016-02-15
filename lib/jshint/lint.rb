@@ -104,7 +104,12 @@ module Jshint
     end
 
     def exclude_file?(filename)
-      config.excluded_search_paths.any? {|path| File.fnmatch?(File.join(path, '*'), filename)}
+      # config.excluded_search_paths.any? {|path| File.fnmatch?(File.join(path, '*'), filename)}
+      config.excluded_search_paths.any? do |path|
+        # require 'pry'; binding.pry
+        glob = File.directory?(path) ? File.join(path, '*') : path
+        File.fnmatch?(glob, filename)
+      end
     end
   end
 end

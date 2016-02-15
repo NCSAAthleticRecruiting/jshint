@@ -80,7 +80,7 @@ describe Jshint::Lint do
       end
     end
 
-    context "excluded subdirectory" do
+    context "with excluded subdirectory" do
       let(:excluded_path) { 'app/assets/javascripts/i18n' }
       let(:excluded_file) { 'app/assets/javascripts/i18n/test.js' }
       let(:deeper_excluded_file) { 'app/assets/javascripts/i18n/js/test.js' }
@@ -90,6 +90,7 @@ describe Jshint::Lint do
         allow(subject).to receive(:javascript_files).and_call_original
         allow(subject).to receive(:file_paths).and_return([excluded_path])
         allow(Dir).to receive(:glob).and_yield(file).and_yield(excluded_file).and_yield(deeper_excluded_file)
+        allow(File).to receive(:directory?).with(excluded_path).and_return(true)
         allow(configuration).to receive(:excluded_search_paths).and_return([excluded_path])
         allow(subject).to receive(:get_file_content_as_json).
           and_return(subject.get_json(<<-eos
@@ -110,6 +111,21 @@ describe Jshint::Lint do
         expect(subject).to_not receive(:get_file_content_as_json).with(excluded_file)
         expect(subject).to_not receive(:get_file_content_as_json).with(deeper_excluded_file)
         subject.lint
+      end
+
+      context "with excluded glob" do
+        let(:excluded_path) { 'app/assets/javascripts/i18n/*.js' }
+
+        before do
+          allow(File).to receive(:directory?).with(excluded_path).and_return(false)
+        end
+
+        it "should not load files that match excluded glob" do
+          expect(subject).to receive(:get_file_content_as_json).with(file)
+          expect(subject).to_not receive(:get_file_content_as_json).with(excluded_file)
+          expect(subject).to_not receive(:get_file_content_as_json).with(deeper_excluded_file)
+          subject.lint
+        end
       end
     end
   end
